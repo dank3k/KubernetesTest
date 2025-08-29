@@ -11,6 +11,12 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Instal ekstensi PHP yang dibutuhkan
+RUN docker-php-ext-install pdo_mysql exif pcntl gd
+
+# Instal ekstensi PHP yang dibutuhkan (seperti GD)
+RUN docker-php-ext-install gd
+
 # Install common PHP extensions for Laravel/Aimeos
 RUN docker-php-ext-install pdo_mysql exif pcntl
 RUN docker-php-ext-install dom

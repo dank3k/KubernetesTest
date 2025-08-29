@@ -11,12 +11,13 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libicu-dev \
+    libzip-dev \
     nginx
 
 # Instal ekstensi PHP yang dibutuhkan (untuk Laravel/Aimeos)
-RUN docker-php-ext-install pdo_mysql exif pcntl gd dom intl
+RUN docker-php-ext-install pdo_mysql exif pcntl gd dom intl zip
 
-# Hapus cache APT
+# Hapus cache APT untuk menghemat ruang
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instal Composer secara global
@@ -31,7 +32,7 @@ COPY . /var/www/html
 # Tambahkan Git trust untuk direktori
 RUN git config --global --add safe.directory /var/www/html
 
-# Instal dependensi Composer
+# Instal dependensi Composer (baris ini sudah ada)
 RUN composer install --no-dev --optimize-autoloader
 
 # Beri hak akses ke folder yang dibutuhkan oleh Laravel/Aimeos

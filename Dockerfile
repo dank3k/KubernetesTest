@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Install common PHP extensions for Laravel/Aimeos
+RUN docker-php-ext-install pdo_mysql exif pcntl
+RUN docker-php-ext-install dom
+
 # Hapus cache APT
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

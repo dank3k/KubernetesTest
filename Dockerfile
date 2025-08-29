@@ -13,19 +13,25 @@ RUN apk update && apk add --no-cache \
     oniguruma-dev \
     bash \
     tzdata \
+    icu-dev \
     && rm -rf /var/cache/apk/*
 
-RUN docker-php-ext-install pdo pdo_mysql opcache
+# Menginstal ekstensi PHP yang diperlukan
+# Ekstensi 'intl' ditambahkan untuk memenuhi persyaratan Aimeos
+RUN docker-php-ext-install pdo pdo_mysql opcache intl
 RUN docker-php-ext-configure gd --with-jpeg && docker-php-ext-install gd
 
 # Menginstal Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Salin semua file dari direktori lokal ke direktori kerja container
-COPY . /var/www/html
+# Salin file composer.json dan composer.lock untuk caching yang lebih baik
+COPY composer.json composer.lock ./
 
 # Menginstal dependensi PHP menggunakan Composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Salin semua file dari direktori lokal ke direktori kerja container
+COPY . /var/www/html
 
 # Mengubah kepemilikan file agar dapat diakses oleh Nginx dan PHP-FPM
 # Ini adalah langkah KRUSIAL untuk mengatasi error 403 Forbidden

@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libicu-dev \
+    libzip-dev \
     nginx
 
 # Instal ekstensi PHP yang dibutuhkan (untuk Laravel/Aimeos)

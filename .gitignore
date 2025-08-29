@@ -1,7 +1,29 @@
 /vendor
-composer.lock
-.phpunit.result.cache
-.phpunit.cache
+/public/mimeicons
+/cache
+/logs
+/build
+
+# IDE-specific files
 .idea/
-node_modules
-phpunit.xml
+.vscode/
+
+# Build artifacts and caches
+composer.lock
+.phpunit.cache
+.phpunit.result.cache
+.coveralls.yml
+
+# Environment files
+.env
+.env.testing
+
+# Local development and CI/CD files
+.circleci/
+.devcontainer/
+.github/
+
+# Composer and PHPUnit
+composer.json
+phpunit.xml.dist
+build.xml

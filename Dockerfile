@@ -1,10 +1,11 @@
-# Menggunakan image dasar PHP-FPM versi 8.2
+# Use the base PHP-FPM image
 FROM php:8.2-fpm-alpine
 
-# Mengatur working directory di dalam container
+# Set the working directory inside the container
 WORKDIR /var/www/html
 
-# Menginstal dependensi sistem yang dibutuhkan untuk ekstensi PHP
+# Install system dependencies and required PHP extensions
+# The order is important: install system libraries first, then PHP extensions.
 RUN apk update && apk add --no-cache \
     git \
     libzip-dev \
@@ -20,7 +21,7 @@ RUN apk update && apk add --no-cache \
     mariadb-connector-c-dev \
     && rm -rf /var/cache/apk/*
 
-# Menginstal ekstensi PHP yang diperlukan
+# Install the necessary PHP extensions
 RUN docker-php-ext-install -j$(nproc) \
     pdo \
     pdo_mysql \
@@ -29,23 +30,23 @@ RUN docker-php-ext-install -j$(nproc) \
     mbstring \
     iconv \
     curl
-RUN docker-php-ext-configure gd --with-jpeg --with-freetype && docker-php-ext-install -j$(nproc) gd
+RUN docker-php-ext-configure gd --with-jpeg && docker-php-ext-install -j$(nproc) gd
 
-# Menginstal Composer
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Salin SEMUA file proyek ke dalam container
+# Copy ALL project files into the container
 COPY . /var/www/html
 
-# Menginstal dependensi PHP menggunakan Composer
+# Install PHP dependencies with Composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Mengubah kepemilikan file
+# Change file ownership to be accessible by Nginx and PHP-FPM
 RUN chown -R www-data:www-data /var/www/html
 
-# Memastikan folder cache Laravel dapat ditulis
+# Make sure Laravel cache folders are writable
 RUN chmod -R 775 /var/www/html/storage
 RUN chmod -R 775 /var/www/html/bootstrap/cache
 
-# Menjalankan PHP-FPM
+# Run PHP-FPM
 CMD ["php-fpm"]

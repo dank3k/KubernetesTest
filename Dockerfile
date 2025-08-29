@@ -1,10 +1,10 @@
-# Menggunakan image dasar PHP-FPM
+# Menggunakan image dasar PHP-FPM versi 8.2
 FROM php:8.2-fpm-alpine
 
 # Mengatur working directory di dalam container
 WORKDIR /var/www/html
 
-# Menginstal dependensi sistem dan ekstensi PHP yang dibutuhkan
+# Menginstal dependensi sistem yang dibutuhkan untuk ekstensi PHP
 RUN apk update && apk add --no-cache \
     git \
     libzip-dev \
@@ -16,11 +16,7 @@ RUN apk update && apk add --no-cache \
     curl-dev \
     bash \
     tzdata \
-    # Tambahan penting untuk ekstensi umum lainnya
-    libwebp-dev \
-    # Dependency untuk iconv and mbstring
     libxml2-dev \
-    # Pastikan dependensi pdo tersedia
     mariadb-connector-c-dev \
     && rm -rf /var/cache/apk/*
 
@@ -33,7 +29,7 @@ RUN docker-php-ext-install -j$(nproc) \
     mbstring \
     iconv \
     curl
-RUN docker-php-ext-configure gd --with-jpeg && docker-php-ext-install -j$(nproc) gd
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype && docker-php-ext-install -j$(nproc) gd
 
 # Menginstal Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -44,7 +40,7 @@ COPY . /var/www/html
 # Menginstal dependensi PHP menggunakan Composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Mengubah kepemilikan file agar dapat diakses oleh Nginx dan PHP-FPM
+# Mengubah kepemilikan file
 RUN chown -R www-data:www-data /var/www/html
 
 # Memastikan folder cache Laravel dapat ditulis

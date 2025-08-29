@@ -1,3 +1,6 @@
+# Add Git trust for the directory
+RUN git config --global --add safe.directory /var/www/html
+
 # Gunakan image PHP-FPM resmi
 FROM php:8.1-fpm
 
@@ -9,7 +12,11 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libicu-dev \
+    nginx
+
+# ... other Dockerfile commands ...
 
 # Instal ekstensi PHP yang dibutuhkan
 RUN docker-php-ext-install pdo_mysql exif pcntl gd

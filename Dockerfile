@@ -27,6 +27,9 @@ WORKDIR /var/www/html
 # Salin semua file dari direktori lokal ke direktori kerja container
 COPY . /var/www/html
 
+# Ubah kepemilikan file agar dapat diakses oleh Nginx dan PHP-FPM
+RUN chown -R www-data:www-data /var/www/html
+
 # Tambahkan Git trust untuk direktori
 RUN git config --global --add safe.directory /var/www/html
 
@@ -37,7 +40,8 @@ RUN composer install --no-dev --optimize-autoloader
 RUN mkdir -p /var/www/html/storage/framework/cache \
            /var/www/html/storage/framework/sessions \
            /var/www/html/storage/framework/views \
-           /var/www/html/storage/logs && \
+           /var/www/html/storage/logs \
+           /var/www/html/bootstrap/cache && \
     chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Ekspos port default PHP-FPM

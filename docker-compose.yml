@@ -3,6 +3,8 @@ version: '3.8'
 services:
   # Service untuk aplikasi PHP kita
   app:
+ # ... other configurations
+    user: "1000:1000" # Ganti dengan user ID dan group ID Anda
     build:
       context: .
       dockerfile: Dockerfile
@@ -31,16 +33,16 @@ services:
     depends_on:
       - app
 
-  # Service untuk database MySQL
-  db:
-    image: mysql:8.0
-    container_name: aimeos-db
-    restart: always
-    environment:
-      - MYSQL_DATABASE=${DB_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - dbdata:/var/lib/mysql
+# Service untuk database MySQL
+db:
+  image: mysql:8.0
+  container_name: aimeos-db
+  restart: always
+  environment:
+    - MYSQL_DATABASE=${DB_DATABASE}
+    - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+  volumes:
+    - dbdata:/var/lib/mysql
 
 volumes:
   dbdata:

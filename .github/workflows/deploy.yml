@@ -1,0 +1,38 @@
+name: Deploy to Google Compute Engine
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: project-porto-470103 # Ganti dengan ID Proyek GCP Anda
+  GCE_ZONE: asia-southeast2-a # Ganti dengan zona VM Anda
+  GCE_INSTANCE: testing # Ganti dengan nama VM Anda
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Authorize Docker Push
+      run: gcloud auth configure-docker
+
+    - name: Build Docker Image
+      run: docker build -t gcr.io/${{ env.PROJECT_ID }}/aimeos-app:latest .
+
+    - name: Push Docker Image to GCR
+      run: docker push gcr.io/${{ env.PROJECT_ID }}/aimeos-app:latest
+
+    - name: Deploy to GCE
+      run: gcloud compute ssh ${{ env.GCE_INSTANCE }} --zone ${{ env.GCE_ZONE }} --command "sudo docker pull gcr.io/${{ env.PROJECT_ID }}/aimeos-app:latest && sudo docker-compose down && sudo docker-compose up -d"

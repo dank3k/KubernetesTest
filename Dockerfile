@@ -1,7 +1,7 @@
 # Gunakan image PHP-FPM resmi
 FROM php:8.1-fpm
 
-# Instal dependensi sistem dan ekstensi PHP
+# Instal dependensi sistem dan ekstensi PHP yang dibutuhkan oleh Laravel dan Aimeos
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -12,13 +12,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libicu-dev \
     libzip-dev \
-    nginx
+    nginx \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instal ekstensi PHP yang dibutuhkan (untuk Laravel/Aimeos)
 RUN docker-php-ext-install pdo_mysql exif pcntl gd dom intl zip
-
-# Hapus cache APT untuk menghemat ruang
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instal Composer secara global
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -32,11 +30,15 @@ COPY . /var/www/html
 # Tambahkan Git trust untuk direktori
 RUN git config --global --add safe.directory /var/www/html
 
-# Instal dependensi Composer (baris ini sudah ada)
+# Instal dependensi Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Beri hak akses ke folder yang dibutuhkan oleh Laravel/Aimeos
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Buat direktori yang dibutuhkan dan berikan izin
+RUN mkdir -p /var/www/html/storage/framework/cache \
+           /var/www/html/storage/framework/sessions \
+           /var/www/html/storage/framework/views \
+           /var/www/html/storage/logs && \
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Ekspos port default PHP-FPM
 EXPOSE 9000

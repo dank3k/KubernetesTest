@@ -16,10 +16,17 @@ RUN apk update && apk add --no-cache \
     curl-dev \
     bash \
     tzdata \
+    # Tambahan penting untuk ekstensi umum lainnya
+    libwebp-dev \
+    # Dependency untuk iconv and mbstring
+    libxml2-dev \
+    # Pastikan dependensi pdo tersedia
+    mariadb-connector-c-dev \
     && rm -rf /var/cache/apk/*
 
 # Menginstal ekstensi PHP yang diperlukan
 RUN docker-php-ext-install -j$(nproc) \
+    pdo \
     pdo_mysql \
     opcache \
     intl \

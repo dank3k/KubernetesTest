@@ -13,12 +13,12 @@ RUN apk update && apk add --no-cache \
     oniguruma-dev \
     bash \
     tzdata \
-    icu-dev \
+    icu-dev \ # <-- Pastikan Anda menambahkan ini
     && rm -rf /var/cache/apk/*
 
 # Menginstal ekstensi PHP yang diperlukan
-# Ekstensi 'intl' ditambahkan untuk memenuhi persyaratan Aimeos
-RUN docker-php-ext-install pdo pdo_mysql opcache intl
+# Ekstensi 'intl' ditambahkan di sini
+RUN docker-php-ext-install pdo pdo_mysql opcache intl 
 RUN docker-php-ext-configure gd --with-jpeg && docker-php-ext-install gd
 
 # Menginstal Composer

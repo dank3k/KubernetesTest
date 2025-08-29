@@ -11,11 +11,10 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libicu-dev \
-    libzip-dev \
     nginx
 
 # Instal ekstensi PHP yang dibutuhkan (untuk Laravel/Aimeos)
-RUN docker-php-ext-install pdo_mysql exif pcntl gd dom intl zip
+RUN docker-php-ext-install pdo_mysql exif pcntl gd dom intl
 
 # Hapus cache APT
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

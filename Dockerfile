@@ -11,13 +11,15 @@ RUN apk update && apk add --no-cache \
     libpng-dev \
     jpeg-dev \
     oniguruma-dev \
+    libcurl \
+    curl-dev \
     bash \
     tzdata \
     icu-dev \
     && rm -rf /var/cache/apk/*
 
 # Menginstal ekstensi PHP yang diperlukan
-RUN docker-php-ext-install pdo pdo_mysql opcache intl
+RUN docker-php-ext-install pdo pdo_mysql opcache intl mbstring iconv curl
 RUN docker-php-ext-configure gd --with-jpeg && docker-php-ext-install gd
 
 # Menginstal Composer
